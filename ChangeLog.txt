@@ -1,0 +1,6 @@
+falcon_mechanics ChangeLog
+==========================
+
+2008-10-05 Kyle Machulis <kyle@nonpolynomial.com>
+	* Release v1.0 
+	* Made original falcon mechanics code work with libnifalcon
