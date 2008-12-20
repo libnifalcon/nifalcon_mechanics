@@ -112,8 +112,9 @@ namespace controller
 	
 		if (toolbox)
 			toolbox->sync();
-	
-		gmtl::Point3f position = falconKinematic->getDirectKinematic()->calculate(gmtl::Vec3f(gmtl::Math::deg2Rad(angle1), gmtl::Math::deg2Rad(angle2), gmtl::Math::deg2Rad(angle3)));
+
+		gmtl::Vec3f angle_vec(gmtl::Math::deg2Rad(angle1), gmtl::Math::deg2Rad(angle2), gmtl::Math::deg2Rad(angle3));
+	gmtl::Point3f position = falconKinematic->getDirectKinematic()->calculate(angle_vec);
 	
 		falconView->getEffector()->setPosition(position);
 	
