@@ -5,12 +5,13 @@
 #include "boost/progress.hpp"
 
 
-#include "comm/FalconCommLibFTDI.h"
-#include "grip/FalconGripFourButton.h"
-#include "firmware/FalconFirmwareNovintSDK.h"
+#include "falcon/comm/FalconCommLibFTDI.h"
+#include "falcon/grip/FalconGripFourButton.h"
+#include "falcon/firmware/FalconFirmwareNovintSDK.h"
+#include "falcon/util/FalconFirmwareBinaryNvent.h"
 
-#include "kinematic/stamper/InverseKinematic.h"
-#include "kinematic/stamper/JacobianMatrix.h"
+#include "falcon/kinematic/stamper/InverseKinematic.h"
+#include "falcon/kinematic/stamper/JacobianMatrix.h"
 
 #include <iostream>
 
@@ -38,10 +39,16 @@ namespace controller
 		if(!falconModel->isFirmwareLoaded())
 		{
 			std::cout << "Loading firmware..." << std::endl;
-			std::cout << falconModel->setFirmwareFile("test_firmware.bin") << std::endl;		
 			for(int i = 0; i < 10; ++i)
 			{			
-				if(falconModel->loadFirmware(10)) break;
+				if(!falconModel->getFalconFirmware()->loadFirmware(true, NOVINT_FALCON_NVENT_FIRMWARE_SIZE, const_cast<uint8_t*>(NOVINT_FALCON_NVENT_FIRMWARE)))
+				{
+					std::cout << "Could not load firmware" << std::endl;
+				}
+				else
+				{
+					break;
+				}
 			}
 		}
 		std::cout << "Kinematics initialization" << std::endl;
@@ -114,9 +121,10 @@ namespace controller
 			toolbox->sync();
 
 		gmtl::Vec3f angle_vec(gmtl::Math::deg2Rad(angle1), gmtl::Math::deg2Rad(angle2), gmtl::Math::deg2Rad(angle3));
-	gmtl::Point3f position = falconKinematic->getDirectKinematic()->calculate(angle_vec);
-	
-		falconView->getEffector()->setPosition(position);
+		gmtl::Point3f position = falconKinematic->getDirectKinematic()->calculate(angle_vec);
+		gmtl::Point3f position_new = position;
+		position_new *= 1000.0;
+		falconView->getEffector()->setPosition(position_new);
 	
 		libnifalcon::StamperKinematicImpl::Angle angle = libnifalcon::StamperKinematicImpl::InverseKinematic::calculate(position);
 	
